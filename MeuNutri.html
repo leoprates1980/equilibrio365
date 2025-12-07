@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥗Equilíbrio365 - Assistente Nutricional</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2b8a8a;
+            --primary-dark: #1f6b6b;
+            --secondary: #f5a623;
+            --success: #4caf50;
+            --danger: #f44336;
+            --bg: #f5f7fa;
+            --surface: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #ecf0f1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        header h1 { font-size: 4.5rem; margin-bottom: 8px; font-weight: 700; }
+        header p { opacity: 0.95; font-size: 1rem; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .nav {
+            display: flex;
+            gap: 8px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            background: var(--surface);
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .nav-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        .nav-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(43, 138, 138, 0.3);
+        }
+        @media (max-width: 600px) {
+            .nav-btn { min-width: 80px; padding: 10px 12px; font-size: 0.85rem; }
+        }
+        .tabs { position: relative; }
+        .tab { display: none; animation: fadeIn 0.3s ease; }
+        .tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .card {
+            background: var(--surface);
+            padding: 28px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+        .card h2 {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid var(--secondary);
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(43, 138, 138, 0.1);
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(43, 138, 138, 0.3);
+        }
+        .btn-secondary {
+            background: var(--secondary);
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #e09012;
+        }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #388e3c;
+        }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+        }
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid;
+        }
+        .alert-info { background: #e3f2fd; color: #1565c0; border-color: #1565c0; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border-color: #2e7d32; }
+        .alert-warning { background: #fff3e0; color: #e65100; border-color: #e65100; }
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(43, 138, 138, 0.1);
+        }
+        .search-results {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            box-shadow: var(--shadow);
+        }
+        .search-results.show { display: block; }
+        .search-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s ease;
+            background: white;
+            font-size: 0.95rem;
+        }
+        .search-item:hover { 
+            background: var(--bg);
+        }
+        .search-item.highlight {
+            background: #e3f2fd;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+        .search-item strong { color: var(--primary); display: block; font-weight: 600; margin-bottom: 4px; }
+        .search-item small { color: var(--text-light); font-size: 0.8rem; display: block; }
+        .meal {
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .meal-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+        }
+        .food-item {
+            background: var(--surface);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 2px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+        .food-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+        .food-info { flex: 1; }
+        .food-name { font-weight: 700; color: var(--text); font-size: 1rem; }
+        .food-qty { font-size: 0.9rem; color: var(--text-light); margin-top: 2px; }
+        .food-actions { display: flex; gap: 8px; align-items: center; }
+        .food-kcal { font-weight: 700; color: var(--primary); font-size: 1.1rem; }
+        .food-nutrition {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+        .nutrition-item {
+            text-align: center;
+            padding: 4px;
+        }
+        .nutrition-label {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        .nutrition-value {
+            color: var(--primary);
+            font-weight: 700;
+            margin-top: 2px;
+        }
+        .summary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 24px;
+            border-radius: var(--radius);
+            margin-top: 24px;
+        }
+        .summary h3 { margin-bottom: 16px; font-size: 1.2rem; }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+        .summary-item {
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .summary-label { font-size: 0.85rem; opacity: 0.9; text-transform: uppercase; margin-bottom: 8px; }
+        .summary-value { font-size: 1.6rem; font-weight: 700; }
+        .export-section {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-top: 4px solid var(--secondary);
+            display: none;
+        }
+        .export-section.show { display: flex; }
+        .export-section h3 { color: var(--secondary); margin-bottom: 0; font-size: 1rem; margin-right: 20px; white-space: nowrap; align-self: center; }
+        .export-btns { display: flex; gap: 10px; margin-left: auto; }
+        .export-btns .btn { margin: 0; }
+        .result-box {
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        .result-value { font-size: 2rem; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .result-label { color: var(--text-light); font-size: 0.95rem; margin-bottom: 12px; }
+        .result-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .result-row:last-child { border-bottom: none; }
+        .result-row strong { color: var(--primary); }
+        .info-row { display: flex; justify-content: space-between; padding: 6px 0; }
+        .info-label { font-weight: 600; }
+        .cardapio-item { padding: 8px 0; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
+        .cardapio-item:last-child { border-bottom: none; }
+        .cardapio-name { flex: 1; }
+        .cardapio-qtd { font-size: 0.9rem; color: var(--text-light); margin-left: 10px; }
+        .cardapio-kcal { font-weight: 600; color: var(--primary); margin-left: 10px; }
+        .meal-section { margin-bottom: 16px; }
+        .meal-section-title { font-weight: 700; color: var(--primary); margin: 12px 0 8px 0; font-size: 0.95rem; }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .info-box h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .info-box p {
+            color: var(--text);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .info-box p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-box ul {
+            margin-left: 20px;
+            color: var(--text);
+            font-size: 0.95rem;
+        }
+        
+        .info-box li {
+            margin-bottom: 6px;
+        }
+
+        .alimento-selecionado-display {
+            background: #e8f5e9;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alimento-selecionado-display.show {
+            display: block;
+        }
+
+        .alimento-selecionado-display strong {
+            color: #2e7d32;
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .alimento-selecionado-display small {
+            color: #558b2f;
+            display: block;
+            line-height: 1.6;
+        }
+
+        .water-result {
+            background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+            border: 2px solid #0277bd;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .water-result .water-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #0277bd;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .water-result .water-label {
+            font-size: 1.1rem;
+            color: #01579b;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .water-info {
+            background: white;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .export-section { flex-direction: column; }
+            .export-section h3 { margin-right: 0; margin-bottom: 12px; }
+            .export-btns { margin-left: 0; width: 100%; }
+            .export-btns .btn { flex: 1; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🥗Equilíbrio365</h1>
+        <p>Seu Assistente Nutricional de Todos os Dias</p>
+    </header>
+
+    <div class="container">
+        <div class="nav">
+            <button class="nav-btn active" onclick="mudarTab('perfil')">Perfil</button>
+            <button class="nav-btn" onclick="mudarTab('imc')">IMC</button>
+            <button class="nav-btn" onclick="mudarTab('tmb')">TMB</button>
+            <button class="nav-btn" onclick="mudarTab('agua')">Água</button>
+            <button class="nav-btn" onclick="mudarTab('cardapio')">Cardápio</button>
+            <button class="nav-btn" onclick="mudarTab('relatorio')">Relatório</button>
+        </div>
+
+        <div class="tabs">
+            <!-- PERFIL -->
+            <div id="perfil" class="tab active">
+                <div class="card">
+                    <h2>Dados Pessoais</h2>
+                    <form onsubmit="salvarPerfil(event)">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nome">Nome Completo *</label>
+                                <input type="text" id="nome" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="idade">Idade (anos) *</label>
+                                <input type="number" id="idade" min="1" max="150" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sexo">Sexo *</label>
+                                <select id="sexo" required>
+                                    <option value="">Selecione</option>
+                                    <option value="M">Masculino</option>
+                                    <option value="F">Feminino</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="peso">Peso (kg) *</label>
+                                <input type="number" id="peso" step="0.1" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="altura">Altura (cm) *</label>
+                                <input type="number" id="altura" step="0.1" min="1" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Salvar Dados</button>
+                    </form>
+                    <div id="msgPerfil"></div>
+                </div>
+            </div>
+
+            <!-- IMC -->
+            <div id="imc" class="tab">
+                <div class="card">
+                    <h2>Calculadora de IMC</h2>
+                    
+                    <div class="info-box">
+                        <h3>O que é IMC?</h3>
+                        <p><strong>Índice de Massa Corporal</strong> é uma medida que relaciona peso e altura para avaliar o estado nutricional.</p>
+                        <p><strong>Fórmula:</strong> IMC = Peso (kg) ÷ Altura² (m)</p>
+                        <p><strong>Classificação:</strong></p>
+                        <ul>
+                            <li><strong>Abaixo de 18,5:</strong> Abaixo do Peso</li>
+                            <li><strong>18,5 a 24,9:</strong> Peso Normal</li>
+                            <li><strong>25,0 a 29,9:</strong> Sobrepeso</li>
+                            <li><strong>30 ou mais:</strong> Obesidade</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="imcPeso">Peso (kg)</label>
+                            <input type="number" id="imcPeso" step="0.1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="imcAltura">Altura (cm)</label>
+                            <input type="number" id="imcAltura" step="0.1" min="1">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="calcularIMC()">Calcular</button>
+                    <div id="resultadoIMC"></div>
+                </div>
+            </div>
+
+            <!-- TMB -->
+            <div id="tmb" class="tab">
+                <div class="card">
+                    <h2>Calculadora de TMB</h2>
+                    
+                    <div class="info-box">
+                        <h3>O que é TMB e GET?</h3>
+                        <p><strong>TMB (Taxa Metabólica Basal)</strong> é a quantidade de calorias que seu corpo queima em repouso completo para manter as funções vitais (respiração, circulação, etc.).</p>
+                        <p><strong>GET (Gasto Energético Total)</strong> é a TMB multiplicada pelo seu nível de atividade física. Este é o total de calorias que você gasta por dia.</p>
+                        <p><strong>Níveis de Atividade:</strong></p>
+                        <ul>
+                            <li><strong>Sedentário:</strong> Pouco ou nenhum exercício (multiplicador: 1,2)</li>
+                            <li><strong>Levemente Ativo:</strong> 1-2 dias de exercício por semana (multiplicador: 1,375)</li>
+                            <li><strong>Moderadamente Ativo:</strong> 3-4 dias de exercício por semana (multiplicador: 1,55)</li>
+                            <li><strong>Muito Ativo:</strong> 5-6 dias de exercício por semana (multiplicador: 1,725)</li>
+                            <li><strong>Extremamente Ativo:</strong> Exercício intenso diariamente (multiplicador: 1,9)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tmbPeso">Peso (kg)</label>
+                            <input type="number" id="tmbPeso" step="0.1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="tmbAltura">Altura (cm)</label>
+                            <input type="number" id="tmbAltura" step="0.1" min="1">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tmbIdade">Idade (anos)</label>
+                            <input type="number" id="tmbIdade" min="1" max="150">
+                        </div>
+                        <div class="form-group">
+                            <label for="tmbSexo">Sexo</label>
+                            <select id="tmbSexo">
+                                <option value="">Selecione</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Feminino</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="tmbAtividade">Nível de Atividade Física *</label>
+                            <select id="tmbAtividade" required>
+                                <option value="">Selecione</option>
+                                <option value="sedentario">Sedentário (sem exercício)</option>
+                                <option value="leve">Levemente Ativo (1-2 dias/semana)</option>
+                                <option value="moderado">Moderadamente Ativo (3-4 dias/semana)</option>
+                                <option value="muito">Muito Ativo (5-6 dias/semana)</option>
+                                <option value="extremo">Extremamente Ativo (todos os dias)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="calcularTMB()">Calcular TMB e GET</button>
+                    <div id="resultadoTMB"></div>
+                </div>
+            </div>
+
+            <!-- ÁGUA -->
+            <div id="agua" class="tab">
+                <div class="card">
+                    <h2>Calculadora de Consumo de Água</h2>
+                    
+                    <div class="info-box">
+                        <h3>Consumo Diário de Água Recomendado</h3>
+                        <p><strong>A água é essencial</strong> para o funcionamento do corpo, regulando temperatura, transportando nutrientes e eliminando resíduos.</p>
+                        <p><strong>Fórmula Utilizada:</strong> Peso (kg) × 0,045 = Litros/dia</p>
+                        <p><strong>Benefícios da hidratação adequada:</strong></p>
+                        <ul>
+                            <li>Melhora a digestão e metabolismo</li>
+                            <li>Aumenta a energia e concentração</li>
+                            <li>Melhora a saúde da pele</li>
+                            <li>Ajuda na regulação de temperatura corporal</li>
+                            <li>Facilita a eliminação de toxinas</li>
+                        </ul>
+                        <p style="margin-top: 12px;"><strong>Dica:</strong> Beba a água gradualmente ao longo do dia e aumente a ingestão em dias quentes ou de exercício intenso.</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="aguaPeso">Peso (kg) *</label>
+                        <input type="number" id="aguaPeso" step="0.1" min="1" required placeholder="Ex: 70">
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="calcularAgua()">Calcular Consumo Diário</button>
+                    <div id="resultadoAgua"></div>
+                </div>
+            </div>
+
+            <!-- CARDÁPIO -->
+            <div id="cardapio" class="tab">
+                <div class="card">
+                    <h2>Montador de Cardápio</h2>
+                    <p style="margin-bottom: 16px;">Busque entre mais de <strong>500 alimentos</strong>. Digite 3+ letras para buscar.</p>
+                    <div class="alert alert-info">Dica: Use as setas ↑↓ para navegar, Enter para selecionar ou clique direto no alimento</div>
+                    
+                    <div class="search-container">
+                        <input type="text" id="buscaAlimento" class="search-input" placeholder="Procure por: arroz, frango, leite..." oninput="buscarAlimentos(this.value)" onkeydown="navegarAlimentos(event)">
+                        <div class="search-results" id="resultadosBusca"></div>
+                    </div>
+
+                    <div id="alimentoSelecionadoBox" class="alimento-selecionado-display">
+                        <strong id="alimentoNome"></strong>
+                        <small id="alimentoInfo"></small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade (g) *</label>
+                            <input type="number" id="quantidade" value="100" step="1" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="refeicao">Refeição *</label>
+                            <select id="refeicao" required>
+                                <option value="cafe">Café da Manhã</option>
+                                <option value="lanche_manha">Lanche Manhã</option>
+                                <option value="almoco">Almoço</option>
+                                <option value="lanche_tarde">Lanche Tarde</option>
+                                <option value="jantar">Jantar</option>
+                                <option value="lanche_noite">Lanche Noite</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="adicionarAlimento()">Adicionar</button>
+
+                    <div id="cardapioMonitor" style="margin-top: 28px;"></div>
+                </div>
+            </div>
+
+            <!-- RELATÓRIO -->
+            <div id="relatorio" class="tab">
+                <div class="card">
+                    <h2>Relatório Consolidado</h2>
+                    <div id="relatorioConteudo">
+                        <div class="alert alert-info">Complete os dados das outras abas para gerar o relatório.</div>
+                    </div>
+                </div>
+                <div id="secaoExportacao" class="export-section">
+                    <h3>Exportar & Imprimir</h3>
+                    <div class="export-btns">
+                        <button class="btn btn-secondary" onclick="exportarTXT()">Baixar TXT</button>
+                        <button class="btn btn-success" onclick="imprimirRelatorio()">Imprimir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="alimentos_data.js"></script>
+    <script>
+        let usuario = null;
+        let alimentoSelecionado = null;
+        let imc = null;
+        let tmb = null;
+        let get = null;
+        let tmbAtividadeDesc = null;
+        let agua = null;
+        let cardapio = { cafe: [], lanche_manha: [], almoco: [], lanche_tarde: [], jantar: [], lanche_noite: [] };
+        let temDados = false;
+        let indiceDestaque = -1;
+        let alimentosEncontrados = [];
+
+        function normalizar(texto) {
+            return texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        function mudarTab(nome) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(nome).classList.add('active');
+            event.target.classList.add('active');
+            if (nome === 'relatorio') atualizarRelatorio();
+        }
+
+        function atualizarVisibilidadeExportacao() {
+            const temAlgo = usuario || imc !== null || tmb !== null || agua !== null || Object.values(cardapio).some(r => r.length > 0);
+            document.getElementById('secaoExportacao').classList.toggle('show', temAlgo);
+            temDados = temAlgo;
+        }
+
+        function salvarPerfil(e) {
+            e.preventDefault();
+            usuario = {
+                nome: document.getElementById('nome').value,
+                email: document.getElementById('email').value,
+                idade: parseInt(document.getElementById('idade').value),
+                sexo: document.getElementById('sexo').value,
+                peso: parseFloat(document.getElementById('peso').value),
+                altura: parseFloat(document.getElementById('altura').value)
+            };
+            localStorage.setItem('usuario', JSON.stringify(usuario));
+            document.getElementById('msgPerfil').innerHTML = '<div class="alert alert-success">Dados salvos com sucesso!</div>';
+            atualizarVisibilidadeExportacao();
+        }
+
+        function carregarPerfil() {
+            const dados = localStorage.getItem('usuario');
+            if (dados) {
+                usuario = JSON.parse(dados);
+                document.getElementById('nome').value = usuario.nome;
+                document.getElementById('email').value = usuario.email;
+                document.getElementById('idade').value = usuario.idade;
+                document.getElementById('sexo').value = usuario.sexo;
+                document.getElementById('peso').value = usuario.peso;
+                document.getElementById('altura').value = usuario.altura;
+            }
+        }
+
+        function buscarAlimentos(termo) {
+            const t = normalizar(termo.trim());
+            const resultados = document.getElementById('resultadosBusca');
+            indiceDestaque = -1;
+            
+            if (t.length < 3) {
+                resultados.classList.remove('show');
+                alimentosEncontrados = [];
+                return;
+            }
+            
+            alimentosEncontrados = ALIMENTOS.filter(a => normalizar(a.nome).includes(t));
+            
+            if (alimentosEncontrados.length === 0) {
+                resultados.innerHTML = '<div class="search-item">Nenhum alimento encontrado</div>';
+                resultados.classList.add('show');
+                return;
+            }
+            
+            let html = `<div class="search-item" style="cursor:default; border-bottom:2px solid var(--primary); font-weight:700; padding: 12px 16px;">${alimentosEncontrados.length} resultado(s)</div>`;
+            
+            alimentosEncontrados.forEach((a, index) => {
+                html += `<div class="search-item" data-index="${index}" style="padding: 12px 16px;" onclick="selecionarPorClique(${index})" onmouseover="destaqueMouse(${index})" onmouseout="removerDestaqueMouse()">
+                    <strong>${a.nome}</strong>
+                    <small>${a.kcal} kcal | P: ${a.proteina}g | L: ${a.lipidio}g | C: ${a.carboidrato}g</small>
+                </div>`;
+            });
+            
+            resultados.innerHTML = html;
+            resultados.classList.add('show');
+        }
+
+        function destaqueMouse(index) {
+            document.querySelectorAll('.search-item[data-index]').forEach(item => {
+                item.classList.remove('highlight');
+            });
+            document.querySelector(`[data-index="${index}"]`).classList.add('highlight');
+        }
+
+        function removerDestaqueMouse() {
+            document.querySelectorAll('.search-item[data-index]').forEach(item => {
+                item.classList.remove('highlight');
+            });
+        }
+
+        function selecionarPorClique(index) {
+            if (alimentosEncontrados[index]) {
+                alimentoSelecionado = alimentosEncontrados[index];
+                
+                document.getElementById('alimentoNome').textContent = alimentoSelecionado.nome;
+                document.getElementById('alimentoInfo').innerHTML = `
+                    ${alimentoSelecionado.kcal} kcal | 
+                    P: ${alimentoSelecionado.proteina}g | 
+                    L: ${alimentoSelecionado.lipidio}g | 
+                    C: ${alimentoSelecionado.carboidrato}g |
+                    F: ${alimentoSelecionado.fibra}g
+                `;
+                document.getElementById('alimentoSelecionadoBox').classList.add('show');
+                
+                document.getElementById('buscaAlimento').value = '';
+                document.getElementById('resultadosBusca').classList.remove('show');
+                indiceDestaque = -1;
+                alimentosEncontrados = [];
+            }
+        }
+
+        function navegarAlimentos(event) {
+            const resultados = document.getElementById('resultadosBusca');
+            
+            if (alimentosEncontrados.length === 0) return;
+            
+            if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                indiceDestaque = Math.min(indiceDestaque + 1, alimentosEncontrados.length - 1);
+                atualizarDestaque();
+            } else if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                indiceDestaque = Math.max(indiceDestaque - 1, -1);
+                atualizarDestaque();
+            } else if (event.key === 'Enter') {
+                event.preventDefault();
+                if (indiceDestaque >= 0) {
+                    selecionarPorClique(indiceDestaque);
+                }
+            }
+        }
+
+        function atualizarDestaque() {
+            document.querySelectorAll('.search-item[data-index]').forEach((item, index) => {
+                if (index === indiceDestaque) {
+                    item.classList.add('highlight');
+                    item.scrollIntoView({ block: 'nearest' });
+                } else {
+                    item.classList.remove('highlight');
+                }
+            });
+        }
+
+        function calcularIMC() {
+            const peso = parseFloat(document.getElementById('imcPeso').value);
+            const altura = parseFloat(document.getElementById('imcAltura').value);
+            if (!peso || !altura) { alert('Preencha peso e altura'); return; }
+            
+            imc = peso / ((altura / 100) ** 2);
+            let classificacao = '', cor = '';
+            
+            if (imc < 18.5) { classificacao = 'Abaixo do Peso'; cor = '#ff9800'; }
+            else if (imc < 25) { classificacao = 'Peso Normal'; cor = '#4caf50'; }
+            else if (imc < 30) { classificacao = 'Sobrepeso'; cor = '#ff5722'; }
+            else { classificacao = 'Obesidade'; cor = '#f44336'; }
+            
+            document.getElementById('resultadoIMC').innerHTML = `
+                <div class="result-box">
+                    <div class="result-value" style="color: ${cor};">${imc.toFixed(1)}</div>
+                    <div class="result-label" style="color: ${cor}; font-weight: 600;">${classificacao}</div>
+                </div>
+            `;
+            atualizarVisibilidadeExportacao();
+        }
+
+        function calcularTMB() {
+            const peso = parseFloat(document.getElementById('tmbPeso').value);
+            const altura = parseFloat(document.getElementById('tmbAltura').value);
+            const idade = parseInt(document.getElementById('tmbIdade').value);
+            const sexo = document.getElementById('tmbSexo').value;
+            const atividade = document.getElementById('tmbAtividade').value;
+            
+            if (!peso || !altura || !idade || !sexo || !atividade) { 
+                alert('Preencha todos os campos'); 
+                return; 
+            }
+            
+            tmb = sexo === 'M'
+                ? (10 * peso) + (6.25 * altura) - (5 * idade) + 5
+                : (10 * peso) + (6.25 * altura) - (5 * idade) - 161;
+            
+            let fatorAtividade = 0;
+            tmbAtividadeDesc = '';
+            
+            switch(atividade) {
+                case 'sedentario':
+                    fatorAtividade = 1.2;
+                    tmbAtividadeDesc = 'Sedentário';
+                    break;
+                case 'leve':
+                    fatorAtividade = 1.375;
+                    tmbAtividadeDesc = 'Levemente Ativo';
+                    break;
+                case 'moderado':
+                    fatorAtividade = 1.55;
+                    tmbAtividadeDesc = 'Moderadamente Ativo';
+                    break;
+                case 'muito':
+                    fatorAtividade = 1.725;
+                    tmbAtividadeDesc = 'Muito Ativo';
+                    break;
+                case 'extremo':
+                    fatorAtividade = 1.9;
+                    tmbAtividadeDesc = 'Extremamente Ativo';
+                    break;
+            }
+            
+            get = tmb * fatorAtividade;
+            
+            document.getElementById('resultadoTMB').innerHTML = `
+                <div class="result-box">
+                    <div class="result-value">${tmb.toFixed(0)} kcal/dia</div>
+                    <div class="result-label"><strong>Taxa Metabólica Basal (TMB)</strong></div>
+                    
+                    <div class="result-row">
+                        <span>Nível de Atividade:</span>
+                        <strong>${tmbAtividadeDesc}</strong>
+                    </div>
+                    <div class="result-row">
+                        <span>Fator de Multiplicação:</span>
+                        <strong>${fatorAtividade.toFixed(3)}</strong>
+                    </div>
+                    
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 2px solid var(--border);">
+                        <div class="result-value" style="color: #4caf50; font-size: 1.8rem;">${get.toFixed(0)} kcal/dia</div>
+                        <div class="result-label"><strong>Gasto Energético Total (GET)</strong></div>
+                    </div>
+                </div>
+            `;
+            atualizarVisibilidadeExportacao();
+        }
+
+        function calcularAgua() {
+            const peso = parseFloat(document.getElementById('aguaPeso').value);
+            if (!peso) { alert('Preencha o peso'); return; }
+            
+            agua = peso * 0.045;
+            
+            document.getElementById('resultadoAgua').innerHTML = `
+                <div class="water-result">
+                    <span class="water-value">${agua.toFixed(2)}</span>
+                    <div class="water-label">Litros de Água por Dia</div>
+                    <div class="water-info">
+                        <strong>Recomendação:</strong> Beba esta quantidade de água distribuída ao longo do dia. Em dias muito quentes ou de exercício intenso, aumente a ingestão. Uma boa prática é beber um copo (250ml) a cada hora durante o dia.
+                    </div>
+                </div>
+            `;
+            atualizarVisibilidadeExportacao();
+        }
+
+        function adicionarAlimento() {
+            const qtd = parseFloat(document.getElementById('quantidade').value);
+            const ref = document.getElementById('refeicao').value;
+            
+            if (!alimentoSelecionado || !qtd) { alert('Selecione um alimento'); return; }
+            
+            cardapio[ref].push({
+                id: Date.now(),
+                nome: alimentoSelecionado.nome,
+                qtd: qtd,
+                kcal: (alimentoSelecionado.kcal * qtd) / 100,
+                proteina: (alimentoSelecionado.proteina * qtd) / 100,
+                lipidio: (alimentoSelecionado.lipidio * qtd) / 100,
+                carboidrato: (alimentoSelecionado.carboidrato * qtd) / 100,
+                fibra: (alimentoSelecionado.fibra * qtd) / 100
+            });
+            
+            atualizarCardapio();
+            document.getElementById('buscaAlimento').value = '';
+            document.getElementById('alimentoSelecionadoBox').classList.remove('show');
+            document.getElementById('quantidade').value = '100';
+            alimentoSelecionado = null;
+            atualizarVisibilidadeExportacao();
+        }
+
+        function removerAlimento(ref, id) {
+            cardapio[ref] = cardapio[ref].filter(a => a.id !== id);
+            atualizarCardapio();
+            atualizarVisibilidadeExportacao();
+        }
+
+        function atualizarCardapio() {
+            const cont = document.getElementById('cardapioMonitor');
+            const temAlimentos = Object.values(cardapio).some(r => r.length > 0);
+            
+            if (!temAlimentos) {
+                cont.innerHTML = '';
+                return;
+            }
+            
+            let html = '';
+            let totKcal = 0, totProt = 0, totLip = 0, totCarb = 0, totFib = 0;
+            
+            const nomes = {
+                cafe: 'Café da Manhã',
+                lanche_manha: 'Lanche Manhã',
+                almoco: 'Almoço',
+                lanche_tarde: 'Lanche Tarde',
+                jantar: 'Jantar',
+                lanche_noite: 'Lanche Noite'
+            };
+            
+            Object.keys(cardapio).forEach(ref => {
+                const alimentos = cardapio[ref];
+                if (alimentos.length === 0) return;
+                
+                alimentos.forEach(a => {
+                    totKcal += a.kcal;
+                    totProt += a.proteina;
+                    totLip += a.lipidio;
+                    totCarb += a.carboidrato;
+                    totFib += a.fibra;
+                });
+                
+                html += `<div class="meal"><div class="meal-title">${nomes[ref]}</div>`;
+                
+                alimentos.forEach(a => {
+                    html += `
+                        <div class="food-item">
+                            <div class="food-header">
+                                <div class="food-info">
+                                    <div class="food-name">${a.nome}</div>
+                                    <div class="food-qty">${a.qtd.toFixed(0)}g</div>
+                                </div>
+                                <div class="food-actions">
+                                    <div class="food-kcal">${a.kcal.toFixed(0)}<span style="font-size: 0.7rem;">kcal</span></div>
+                                    <button class="btn btn-danger" onclick="removerAlimento('${ref}', ${a.id})">X</button>
+                                </div>
+                            </div>
+                            <div class="food-nutrition">
+                                <div class="nutrition-item">
+                                    <div class="nutrition-label">Proteína</div>
+                                    <div class="nutrition-value">${a.proteina.toFixed(1)}g</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-label">Lipídio</div>
+                                    <div class="nutrition-value">${a.lipidio.toFixed(1)}g</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-label">Carboidrato</div>
+                                    <div class="nutrition-value">${a.carboidrato.toFixed(1)}g</div>
+                                </div>
+                                <div class="nutrition-item">
+                                    <div class="nutrition-label">Fibra</div>
+                                    <div class="nutrition-value">${a.fibra.toFixed(1)}g</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+            });
+            
+            html += `
+                <div class="summary">
+                    <h3>Resumo Nutricional - Dia Completo</h3>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Calorias</div>
+                            <div class="summary-value">${totKcal.toFixed(0)}</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Proteína</div>
+                            <div class="summary-value">${totProt.toFixed(1)}g</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Lipídios</div>
+                            <div class="summary-value">${totLip.toFixed(1)}g</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Carboidratos</div>
+                            <div class="summary-value">${totCarb.toFixed(1)}g</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Fibras</div>
+                            <div class="summary-value">${totFib.toFixed(1)}g</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            cont.innerHTML = html;
+        }
+
+        function atualizarRelatorio() {
+            let html = '';
+            
+            if (usuario) {
+                html += `
+                    <div class="result-box">
+                        <h3 style="color: var(--primary); margin-bottom: 12px;">DADOS PESSOAIS</h3>
+                        <div class="info-row">
+                            <span class="info-label">Nome:</span>
+                            <span>${usuario.nome}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span>${usuario.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Idade:</span>
+                            <span>${usuario.idade} anos</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Sexo:</span>
+                            <span>${usuario.sexo === 'M' ? 'Masculino' : 'Feminino'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Peso:</span>
+                            <span>${usuario.peso} kg</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Altura:</span>
+                            <span>${usuario.altura} cm</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (imc !== null) {
+                let imcClassificacao = '';
+                if (imc < 18.5) imcClassificacao = 'Abaixo do Peso';
+                else if (imc < 25) imcClassificacao = 'Peso Normal';
+                else if (imc < 30) imcClassificacao = 'Sobrepeso';
+                else imcClassificacao = 'Obesidade';
+                
+                html += `
+                    <div class="result-box">
+                        <h3 style="color: var(--primary); margin-bottom: 12px;">INDICE DE MASSA CORPORAL (IMC)</h3>
+                        <div class="info-row">
+                            <span class="info-label">IMC:</span>
+                            <span style="font-weight: 700; font-size: 1.1rem;">${imc.toFixed(1)}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Classificação:</span>
+                            <span>${imcClassificacao}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (tmb !== null && get !== null) {
+                html += `
+                    <div class="result-box">
+                        <h3 style="color: var(--primary); margin-bottom: 12px;">TAXA METABOLICA BASAL (TMB) E GASTO ENERGETICO</h3>
+                        <div class="info-row">
+                            <span class="info-label">TMB:</span>
+                            <span style="font-weight: 700;">${tmb.toFixed(0)} kcal/dia</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Nível de Atividade:</span>
+                            <span>${tmbAtividadeDesc}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">GET (Gasto Energético Total):</span>
+                            <span style="font-weight: 700;">${get.toFixed(0)} kcal/dia</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (agua !== null) {
+                html += `
+                    <div class="result-box">
+                        <h3 style="color: var(--primary); margin-bottom: 12px;">CONSUMO DIARIO DE AGUA</h3>
+                        <div class="info-row">
+                            <span class="info-label">Consumo Recomendado:</span>
+                            <span style="font-weight: 700;">${agua.toFixed(2)} litros/dia</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            const temAlimentos = Object.values(cardapio).some(r => r.length > 0);
+            if (temAlimentos) {
+                let total = { kcal: 0, prot: 0, lip: 0, carb: 0, fib: 0 };
+                
+                const nomesMeais = {
+                    cafe: 'CAFE DA MANHA',
+                    lanche_manha: 'LANCHE MANHA',
+                    almoco: 'ALMOCO',
+                    lanche_tarde: 'LANCHE TARDE',
+                    jantar: 'JANTAR',
+                    lanche_noite: 'LANCHE NOITE'
+                };
+                
+                html += `<div class="result-box"><h3 style="color: var(--primary); margin-bottom: 12px;">CARDAPIO DETALHADO</h3>`;
+                
+                Object.keys(cardapio).forEach(ref => {
+                    const alimentos = cardapio[ref];
+                    if (alimentos.length === 0) return;
+                    
+                    html += `<div class="meal-section"><div class="meal-section-title">${nomesMeais[ref]}</div>`;
+                    
+                    alimentos.forEach(a => {
+                        total.kcal += a.kcal;
+                        total.prot += a.proteina;
+                        total.lip += a.lipidio;
+                        total.carb += a.carboidrato;
+                        total.fib += a.fibra;
+                        
+                        html += `
+                            <div class="cardapio-item">
+                                <span class="cardapio-name">${a.nome} ${a.qtd.toFixed(0)}g</span>
+                                <span class="cardapio-kcal">${a.kcal.toFixed(0)} kcal</span>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                });
+                
+                html += `</div>`;
+                
+                html += `
+                    <div class="result-box">
+                        <h3 style="color: var(--primary); margin-bottom: 12px;">RESUMO NUTRICIONAL TOTAL</h3>
+                        <div class="info-row">
+                            <span class="info-label">Calorias:</span>
+                            <span style="font-weight: 700;">${total.kcal.toFixed(0)} kcal</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Proteína:</span>
+                            <span>${total.prot.toFixed(1)}g</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Lipídios:</span>
+                            <span>${total.lip.toFixed(1)}g</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Carboidratos:</span>
+                            <span>${total.carb.toFixed(1)}g</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Fibras:</span>
+                            <span>${total.fib.toFixed(1)}g</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (!html) html = '<div class="alert alert-info">Nenhum dado para exibir.</div>';
+            
+            document.getElementById('relatorioConteudo').innerHTML = html;
+        }
+
+        function exportarTXT() {
+            let conteudo = 'RELATORIO DE NUTRICAO - MEU NUTRI\n';
+            conteudo += '='.repeat(50) + '\n\n';
+            
+            if (usuario) {
+                conteudo += 'DADOS PESSOAIS\n';
+                conteudo += '-'.repeat(30) + '\n';
+                conteudo += `Nome: ${usuario.nome}\n`;
+                conteudo += `Email: ${usuario.email}\n`;
+                conteudo += `Idade: ${usuario.idade} anos\n`;
+                conteudo += `Sexo: ${usuario.sexo === 'M' ? 'Masculino' : 'Feminino'}\n`;
+                conteudo += `Peso: ${usuario.peso} kg\n`;
+                conteudo += `Altura: ${usuario.altura} cm\n\n`;
+            }
+            
+            if (imc !== null) {
+                let imcClassificacao = '';
+                if (imc < 18.5) imcClassificacao = 'Abaixo do Peso';
+                else if (imc < 25) imcClassificacao = 'Peso Normal';
+                else if (imc < 30) imcClassificacao = 'Sobrepeso';
+                else imcClassificacao = 'Obesidade';
+                
+                conteudo += 'INDICE DE MASSA CORPORAL (IMC)\n';
+                conteudo += '-'.repeat(30) + '\n';
+                conteudo += `IMC: ${imc.toFixed(1)}\n`;
+                conteudo += `Classificacao: ${imcClassificacao}\n\n`;
+            }
+            
+            if (tmb !== null && get !== null) {
+                conteudo += 'TAXA METABOLICA BASAL (TMB) E GASTO ENERGETICO\n';
+                conteudo += '-'.repeat(30) + '\n';
+                conteudo += `TMB: ${tmb.toFixed(0)} kcal/dia\n`;
+                conteudo += `Nivel de Atividade: ${tmbAtividadeDesc}\n`;
+                conteudo += `GET (Gasto Energetico Total): ${get.toFixed(0)} kcal/dia\n\n`;
+            }
+
+            if (agua !== null) {
+                conteudo += 'CONSUMO DIARIO DE AGUA\n';
+                conteudo += '-'.repeat(30) + '\n';
+                conteudo += `Consumo Recomendado: ${agua.toFixed(2)} litros/dia\n\n`;
+            }
+            
+            const temAlimentos = Object.values(cardapio).some(r => r.length > 0);
+            if (temAlimentos) {
+                let total = { kcal: 0, prot: 0, lip: 0, carb: 0, fib: 0 };
+                
+                const nomesMeais = {
+                    cafe: 'CAFE DA MANHA',
+                    lanche_manha: 'LANCHE MANHA',
+                    almoco: 'ALMOCO',
+                    lanche_tarde: 'LANCHE TARDE',
+                    jantar: 'JANTAR',
+                    lanche_noite: 'LANCHE NOITE'
+                };
+                
+                conteudo += 'CARDAPIO DETALHADO\n';
+                conteudo += '-'.repeat(30) + '\n';
+                
+                Object.keys(cardapio).forEach(ref => {
+                    const alimentos = cardapio[ref];
+                    if (alimentos.length === 0) return;
+                    
+                    conteudo += `\n${nomesMeais[ref]}\n`;
+                    
+                    alimentos.forEach(a => {
+                        total.kcal += a.kcal;
+                        total.prot += a.proteina;
+                        total.lip += a.lipidio;
+                        total.carb += a.carboidrato;
+                        total.fib += a.fibra;
+                        
+                        conteudo += `  ${a.nome} - ${a.qtd.toFixed(0)}g - ${a.kcal.toFixed(0)} kcal\n`;
+                    });
+                });
+                
+                conteudo += '\nRESUMO NUTRICIONAL TOTAL\n';
+                conteudo += '-'.repeat(30) + '\n';
+                conteudo += `Calorias: ${total.kcal.toFixed(0)} kcal\n`;
+                conteudo += `Proteina: ${total.prot.toFixed(1)}g\n`;
+                conteudo += `Lipidios: ${total.lip.toFixed(1)}g\n`;
+                conteudo += `Carboidratos: ${total.carb.toFixed(1)}g\n`;
+                conteudo += `Fibras: ${total.fib.toFixed(1)}g\n`;
+            }
+            
+            const blob = new Blob([conteudo], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'relatorio-nutricao.txt';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        function imprimirRelatorio() {
+            window.print();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarPerfil();
+            atualizarVisibilidadeExportacao();
+            document.addEventListener('click', (e) => {
+                if (e.target.id !== 'buscaAlimento') {
+                    document.getElementById('resultadosBusca').classList.remove('show');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
