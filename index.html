@@ -616,6 +616,87 @@
             color: var(--text-secondary);
             display: block;
         }
+
+        /* Responsividade e Otimizações Mobile */
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 15px 20px;
+            }
+
+            header h1 {
+                font-size: 3.2rem;
+            }
+
+            header p {
+                font-size: 1rem;
+            }
+
+            .card {
+                padding: 25px 20px;
+                margin-bottom: 20px;
+            }
+
+            .card h2 {
+                font-size: 1.6rem;
+                margin-bottom: 20px;
+            }
+
+            .nav {
+                gap: 6px;
+                padding: 10px;
+                flex-wrap: wrap;
+            }
+
+            .nav-btn {
+                padding: 8px 14px;
+                font-size: 0.95rem;
+            }
+
+            .food-nutrition {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .water-result .water-value {
+                font-size: 2.8rem;
+            }
+
+            .result-value {
+                font-size: 2rem;
+            }
+
+            .summary {
+                padding: 20px;
+            }
+
+            .summary-item {
+                padding: 15px;
+            }
+
+            .summary-value {
+                font-size: 1.6rem;
+            }
+
+            .export-btns {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .export-btns .btn {
+                width: 100%;
+            }
+
+            .food-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .food-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
     </style>
 </head>
 
